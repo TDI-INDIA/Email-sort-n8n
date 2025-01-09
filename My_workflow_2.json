@@ -1,0 +1,1593 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -4000,
+        -3260
+      ],
+      "id": "f592558c-8ba7-453d-b779-98990471434f",
+      "name": "When chat message received",
+      "webhookId": "d28baca0-8d35-4382-903a-ed88c47000eb"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "52a6f2c1-b651-43fe-9045-c2e05be1111a",
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "send_mail",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3280,
+        -3520
+      ],
+      "id": "17db7793-4f56-4736-bb1f-00a7be124faf",
+      "name": "send_mail"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "457aeff0-d4c7-4a35-926b-f80d3ffe8886",
+              "leftValue": "={{$json.message.content}}",
+              "rightValue": "calendar_events",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3100,
+        -3120
+      ],
+      "id": "629407dc-eac4-4ef9-b6b1-1acc2ec85e50",
+      "name": "calendar_events"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "457aeff0-d4c7-4a35-926b-f80d3ffe8886",
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "find_mail",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "6cc95d62-efa3-4b4d-8142-6df0d3b737d2",
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "find_mail",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3280,
+        -2920
+      ],
+      "id": "d3cd0711-1440-44c0-991e-941c9182b560",
+      "name": "find_mail"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -2900,
+        -2880
+      ],
+      "id": "e946f54b-a930-4acb-bedd-2f584a505dcb",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.recepient_email_id }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.email_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -2020,
+        -3500
+      ],
+      "id": "87851117-4c9c-4154-ac52-afd4ad87b5e1",
+      "name": "Gmail",
+      "webhookId": "6d985fb4-47c7-46e3-bb54-52ce28fedc47",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4oX24pU5fxx6pmUO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Your task is to write mail. you will get input message{{ $json.message.content}} you will first extract all information mentioned below like:\nname_recepient.\npurpose_email\nrecepient_email_id.\nAfter this you will write a mail for purpose extracted. be brief in mail.\nmail must start with \nHi { name_recepient},\n<Your body of mail here>\nbest,\nAbhishek\nthen, you will write subject_line for mail which must be insync with {purpose_email}\nfinally, you will give output as below:\n{subject_line}\n{body_email}\n{email_id}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.7,
+      "position": [
+        -2960,
+        -3340
+      ],
+      "id": "f7dd02b2-e9d7-4011-8b4e-bca883e1cf13",
+      "name": "make email content1",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "={{ $json.recepient_email_id }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.email_body }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -2100,
+        -3340
+      ],
+      "id": "e077ccf7-976d-4e55-97b8-38b7c9e1e153",
+      "name": "Gmail1",
+      "webhookId": "d9ae19f0-1273-4a37-8f3b-ee6f066d530b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4oX24pU5fxx6pmUO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "df8645df-ae21-49ab-84ee-f98e4c174264",
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "=write_mail",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3120,
+        -3280
+      ],
+      "id": "68c0a416-15d7-4f0a-9ee1-be2e034cb87d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=your input is \n{{ $json.chatInput }} \n\nyou need to classify and extract informationfrom input message into category,\nclass- you need to find class to which message falls. it has 4 categories as mentioned below.\nclass= [send_mail, find_mail,calendar_events,write_mail]\nBE CAREFUL in class extraction, write mail is not same as send mail.\nin case message talks about calendar events, just return calendar events along with details.\n\nsecond task is to find mail purpose, \n2-mail_purpose\nthird is to find mail_id \n3-mail_id\n4- name\nfor example :\nif input message you get is  - send mail to abhishek for dinner tomorrow , his id is risingabhi@gmail.com\noutput should be like following:\nsend_mail,abhishek,for dinner tomorrow ,risingabhi@gmail.com\n\n\n\n",
+              "role": "system"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.7,
+      "position": [
+        -3580,
+        -3260
+      ],
+      "id": "f002eff1-e5cf-4a5e-91a8-0b9a4de7e171",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the content from the OpenAI node\nconst content = $json.message.content; // Assuming \"output\" is the key for OpenAI's //response\n\n// Extract key information\nconst matches = {\n    name_recepient: content.match(/name_recepient:\\s*(.+)/)?.[1]?.trim(),\n    purpose_email: content.match(/purpose_email:\\s*(.+)/)?.[1]?.trim(),\n    recepient_email_id: content.match(/recepient_email_id:\\s*(.+)/)?.[1]?.trim(),\n    email_body: content.split('\\n\\n')[2]?.trim(), // Assuming the third paragraph is the body\n    subject: content.match(/Subject:\\s*(.+)/)?.[1]?.trim(),\n};\n\n// Return extracted information as JSON\nreturn [{ ...matches }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2600,
+        -3380
+      ],
+      "id": "b9c93d83-1b4c-4d35-b982-9f9dbfeb293b",
+      "name": "extract_mail_metadata"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Your task is to write mail. you will get input message{{ $json.message.content}} you will first extract all information mentioned below like:\nname_recepient.\npurpose_email\nrecepient_email_id.\nAfter this you will write a mail for purpose extracted. be brief in mail.\nmail must start with \nHi { name_recepient},\n<Your body of mail here>\nbest,\nAbhishek\nthen, you will write subject_line for mail which must be insync with {purpose_email}\nfinally, you will give output as below:\n{subject_line}\n{body_email}\n{email_id}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.7,
+      "position": [
+        -2920,
+        -3540
+      ],
+      "id": "e27068bf-872a-4447-8b59-59018000328e",
+      "name": "make email content2",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the content from the OpenAI node\nconst content = $json.message.content; // Assuming \"output\" is the key for OpenAI's //response\n\n// Extract key information\nconst matches = {\n    name_recepient: content.match(/name_recepient:\\s*(.+)/)?.[1]?.trim(),\n    purpose_email: content.match(/purpose_email:\\s*(.+)/)?.[1]?.trim(),\n    recepient_email_id: content.match(/recepient_email_id:\\s*(.+)/)?.[1]?.trim(),\n    email_body: content.split('\\n\\n')[2]?.trim(), // Assuming the third paragraph is the body\n    subject: content.match(/Subject:\\s*(.+)/)?.[1]?.trim(),\n};\n\n// Return extracted information as JSON\nreturn [{ ...matches }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2520,
+        -3540
+      ],
+      "id": "0678e58a-9d7e-453a-b31b-f9b1922bc0f4",
+      "name": "extract_mail_metadata1"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "tdicommons@gmail.com",
+          "mode": "list",
+          "cachedResultName": "tdicommons@gmail.com"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.2,
+      "position": [
+        -2700,
+        -3120
+      ],
+      "id": "9c7db7bc-13af-4150-b61f-aea512800b0e",
+      "name": "Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "faPqzrMdT9opOwbt",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -2900,
+        -3120
+      ],
+      "id": "72f6095c-ccd8-4c01-ba17-3245254a2188",
+      "name": "Date & Time1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -2120,
+        -4080
+      ],
+      "id": "a32040ca-73f4-40b8-9556-2e2c8a07e1c4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -2340,
+        -3860
+      ],
+      "id": "594dd991-719e-4aa6-a578-e3abfd7ee3b3",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -2180,
+        -3800
+      ],
+      "id": "26b373b9-b28b-49d2-a064-79b52d63bffb",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "name": "product_launch_assistant",
+        "description": "=retrieves documents from product launch for finding answers related to  {{ $('When chat message received').item.json.chatInput }}",
+        "topK": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        -2040,
+        -3920
+      ],
+      "id": "d929448a-0dd4-44e6-8415-934db3689365",
+      "name": "Vector Store Tool"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-googledrive-demo",
+          "mode": "list",
+          "cachedResultName": "n8n-googledrive-demo"
+        },
+        "options": {
+          "pineconeNamespace": "product-launch"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        -2100,
+        -3780
+      ],
+      "id": "b67e5be8-991a-4fa8-a68c-7fc513a11d2c",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "r8Wk34Cj6M815vKo",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        -2000,
+        -3680
+      ],
+      "id": "23a42dfd-113d-4687-9193-768a65b5e9ac",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1800,
+        -3800
+      ],
+      "id": "9821d7ab-d778-4ce0-b1a1-ee25a62c6c01",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "tdicommons@gmail.com",
+        "subject": "Meeting",
+        "message": "={{ $('AI Agent').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -960,
+        -4100
+      ],
+      "id": "9cca4726-0d10-4ff7-a6e7-5c69a7a1430a",
+      "name": "Gmail2",
+      "webhookId": "798217f5-716d-46b1-b475-c39b79917c15",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4oX24pU5fxx6pmUO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=your input message is \n {{ $json.output }}\nClassify your response only as Postive or negative,basis rule below\nif the message doesnt explicitly contains information about\nemail,sales data, location, ceo name, \nyour response MUST BE NEGATIVE.\notherwise it MUST BE POSITIVE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.7,
+      "position": [
+        -1700,
+        -4120
+      ],
+      "id": "8959f11a-ef25-4d01-b065-e0a4e13ea43f",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "gl": "us",
+          "no_cache": false,
+          "google_domain": "google.com",
+          "hl": "en"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        -3680
+      ],
+      "id": "37d35c28-13aa-4253-bb89-b7fc2506cc91",
+      "name": "SerpAPI",
+      "credentials": {
+        "serpApi": {
+          "id": "UWqtnVv1dRLZnuRX",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $json.output }}",
+        "name": "={{ $('When chat message received').item.json.chatInput }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1L4J5ftbNfw-0wAccKCXVaXV4LHoPaHPI",
+          "mode": "list",
+          "cachedResultName": "N8N-demo",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1L4J5ftbNfw-0wAccKCXVaXV4LHoPaHPI"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -720,
+        -3920
+      ],
+      "id": "3f05c077-45c6-4dc9-b15f-a26d7b8af9f7",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Zyg35SVEhYh9sp2e",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "tdicommons@gmail.com",
+        "subject": "={{ $('When chat message received').item.json.chatInput }}",
+        "message": "={{ $('AI Agent1').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -540,
+        -3900
+      ],
+      "id": "2f332a90-af71-4035-addb-caa9e8b51eb3",
+      "name": "Gmail3",
+      "webhookId": "545d6e3e-44ad-482d-b9cb-432aac85f099",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4oX24pU5fxx6pmUO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        -3720
+      ],
+      "id": "e6e36cd4-d0e1-453a-9b31-d00f10a729bf",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=your input is  {{ $('When chat message received').item.json.chatInput }}.\n\nYour task is to find following information:\n1) Name of CEO of company\n2)Sales data for last 1 year\n3) Email address of people in this company.\n4) Their major product.\n5) Their main competitor\n6) Website link\n7) job posted by company and its details.\nYou can search for above information on Google, Bing, DuckDuckGo etc, you can also visit company databases available.\nFinally you will provide all above information, in case you can't find information, mention that you could not find information for a rlevant item",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1120,
+        -3960
+      ],
+      "id": "6b8a8c70-65a5-4fa0-9166-26efb57c3e7e",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b39048c2-ac86-4a51-b957-ae39cb6f6b9c",
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "positive",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1340,
+        -4080
+      ],
+      "id": "5ad76d7a-431c-4da7-89e3-8f3e3a72438e",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "text": "={{ $('OpenAI').item.json.message.content }}{{ $json.currentDate }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"name\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"email\": {\n\t\t\t\"type\": \"string\",\n\t\t\t\"format\": \"email\"\n\t\t},\n\t\t\"date\": {\n\t\t\t\"type\": \"string\",\n\t\t\t\"format\": \"date\"\n\t\t},\n      \"current_date\": {\n\t\t\t\"type\": \"string\",\n\t\t\t\"format\": \"date\"\n\t\t}\n\t},\n\t\"required\": [\"name\", \"email\", \"date\",\"current_date\"]\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        -2580,
+        -2860
+      ],
+      "id": "44bca1ef-0165-4f93-968c-f3629ed3d3ae",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -2460,
+        -2700
+      ],
+      "id": "f8a1e168-987d-4fd3-8195-5198f4d9d98e",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your input is an array, analyse each item{{ $json.snippet }}\n\nYou need to perform following tasks:\n\n1- email_category:Categorize {{ $json.snippet }}into any of the category given, use business sense and logic to classify [cold_email, follow_up, spam]\nyou may use {{ $json.Subject }} to judge if email is cold_email, follow_up ,spam.\n3-name_sender: \n\nFinally return answer for all items in inputs for three result areas.\ncalculate count for each class.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -2240,
+        -2700
+      ],
+      "id": "ce301b12-06fb-4053-a2f7-55ebf2cc1bab",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -2340,
+        -2560
+      ],
+      "id": "fdb7c32e-372f-42e0-82bc-e31f6a714032",
+      "name": "OpenAI Chat Model4",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "receivedAfter": "={{ $json.output.date }}",
+          "sender": "={{ $json.output.email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -2220,
+        -2860
+      ],
+      "id": "dce98f98-5938-4aa9-8a0e-dba6828372e5",
+      "name": "Gmail4",
+      "webhookId": "93f2d1b6-4bed-46c1-b91b-9205f7bc26e6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4oX24pU5fxx6pmUO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "field": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        -3240
+      ],
+      "id": "efb26c00-dfe1-44fa-a5da-7ef0f63f717a",
+      "name": "mail_count"
+    },
+    {
+      "parameters": {
+        "jsCode": "async function convertGmailDate(input) {\n  // Check if input is an array\n  const timestamps = Array.isArray(input) ? input : [input];\n  \n  // Convert and format each timestamp\n  return timestamps.map(timestamp => {\n    // Create a new Date object\n    const date = new Date(Number(timestamp));\n    \n    // Format the date manually to ensure mm/dd/YY format\n    const month = (date.getMonth() + 1).toString().padStart(2, '0');\n    const day = date.getDate().toString().padStart(2, '0');\n    const year = date.getFullYear().toString().slice(-2);\n    \n    return { \n      formattedDate: `${month}/${day}/${year}`,\n      originalTimestamp: Number(timestamp)\n    };\n  });\n}\n\n// Call the function with the input\nreturn convertGmailDate($json.internalDate);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1720,
+        -3080
+      ],
+      "id": "87eeda08-0137-4d41-84d6-25216e3b5336",
+      "name": "get_date_sent_total"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "snippet"
+            },
+            {
+              "fieldToAggregate": "Subject"
+            },
+            {
+              "fieldToAggregate": "internalDate"
+            },
+            {
+              "fieldToAggregate": "labels[2].name"
+            },
+            {
+              "fieldToAggregate": "From"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1920,
+        -2960
+      ],
+      "id": "c394c084-30f0-4646-a3d1-b5baf2eb4614",
+      "name": "analyse_all_aggregator"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"result\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"content\": { \"type\": \"string\" },\n          \"Classification\": { \"type\": \"string\" },\n          \"name_sender\": { \"type\": \"string\" }\n        },\n        \"required\": [\"content\", \"Classification\", \"name_sender\"]\n      }\n    },\n    \"counts\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"cold_email\": { \"type\": \"number\" },\n        \"follow_up\": { \"type\": \"number\" },\n        \"spam\": { \"type\": \"number\" }\n      },\n      \"required\": [\"cold_email\", \"follow_up\", \"spam\"]\n    }\n  },\n  \"required\": [\"result\", \"counts\"]\n}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        -1840,
+        -2720
+      ],
+      "id": "e74dff51-f1ff-41ec-8732-7a1422c5016b",
+      "name": "Information Extractor1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        -2580
+      ],
+      "id": "d40316cf-c5f3-4a68-b13e-e8cd80d2feed",
+      "name": "OpenAI Chat Model5",
+      "credentials": {
+        "openAiApi": {
+          "id": "fmXLcvut7x7eCRqj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "040204d5-efe0-4308-9d20-7a8a9a656ebe",
+              "leftValue": "={{ $('make email content1').item.json.message.content }}",
+              "rightValue": "provide the input message",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2380,
+        -3380
+      ],
+      "id": "397f534b-f935-4e1c-ad3f-f94631e8a21a",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input data\nconst input = $input.first().json.output.result;\n\n// Prepare rows for Google Sheets\nconst rows = input.map(item => {\n  return {\n    Content: item.content,\n    Classification: item.Classification,\n    NameSender: item.name_sender,\n  };\n});\n\n// Return data for the next node\nreturn rows;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        -2880
+      ],
+      "id": "166d2b2d-4e2f-4966-bf2c-d3b218408679",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1IR_ihScMkkMkj7eOFaf2tXA6z5_itO1U0pxa71JyvLQ",
+          "mode": "list",
+          "cachedResultName": "email_analysis_inbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IR_ihScMkkMkj7eOFaf2tXA6z5_itO1U0pxa71JyvLQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IR_ihScMkkMkj7eOFaf2tXA6z5_itO1U0pxa71JyvLQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "classification": "={{ $json.Classification }}",
+            "sender": "={{ $('analyse_all_aggregator').item.json.From[0] }}",
+            "content": "={{ $json.Content }}",
+            "Date_sent": "="
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "count",
+              "displayName": "count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sender",
+              "displayName": "sender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "classification",
+              "displayName": "classification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date_sent",
+              "displayName": "Date_sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1220,
+        -3140
+      ],
+      "id": "aab0a8db-f218-434e-8b84-55bb3e5eaecd",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "50fZH4iY4IXdtcXR",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1IR_ihScMkkMkj7eOFaf2tXA6z5_itO1U0pxa71JyvLQ",
+          "mode": "list",
+          "cachedResultName": "email_analysis_inbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IR_ihScMkkMkj7eOFaf2tXA6z5_itO1U0pxa71JyvLQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1459353215,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IR_ihScMkkMkj7eOFaf2tXA6z5_itO1U0pxa71JyvLQ/edit#gid=1459353215"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sender": "={{ $('Information Extractor').item.json.output.email }}",
+            "Followup": "={{ $json.output.counts.follow_up }}",
+            "ColdEmail": "={{ $json.output.counts.cold_email }}",
+            "Spam": "={{ $json.output.counts.spam }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Sender",
+              "displayName": "Sender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total_mails_recd",
+              "displayName": "Total_mails_recd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Followup",
+              "displayName": "Followup",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ColdEmail",
+              "displayName": "ColdEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spam",
+              "displayName": "Spam",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1280,
+        -2620
+      ],
+      "id": "84354e4b-1d50-4d23-ab4b-f4a94531ee3d",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "50fZH4iY4IXdtcXR",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "find_mail": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_mail": {
+      "main": [
+        [
+          {
+            "node": "make email content2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "make email content1": {
+      "main": [
+        [
+          {
+            "node": "extract_mail_metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "make email content1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "send_mail",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "calendar_events",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "find_mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract_mail_metadata": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "make email content2": {
+      "main": [
+        [
+          {
+            "node": "extract_mail_metadata1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract_mail_metadata1": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "calendar_events": {
+      "main": [
+        [
+          {
+            "node": "Date & Time1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time1": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Gmail3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Gmail2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Gmail4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail4": {
+      "main": [
+        [
+          {
+            "node": "mail_count",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "analyse_all_aggregator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mail_count": {
+      "main": [
+        []
+      ]
+    },
+    "analyse_all_aggregator": {
+      "main": [
+        [
+          {
+            "node": "get_date_sent_total",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_date_sent_total": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "cbefd811-1b2b-4975-9dcc-0ada079a1ccd",
+  "meta": {
+    "instanceId": "e83fd1e131354d58fb234eecf660ff3356272f047cdc987a37dc2ac06c67f187"
+  },
+  "id": "FzlX96uhiaPmrA3h",
+  "tags": []
+}
